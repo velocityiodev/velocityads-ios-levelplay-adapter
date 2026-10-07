@@ -28,8 +28,10 @@ final class BannerSizeResolutionTests: XCTestCase {
         )
     }
 
-    func test_smart_usesContainerWidth() {
-        let smart = ISBannerSize(description: "SMART", width: 0, height: 0)
+    func test_smart_usesContainerWidth() throws {
+        let smart = try XCTUnwrap(
+            ISBannerSize(description: "SMART", width: 0, height: 0)
+        )
 
         XCTAssertEqual(
             VelocityAdsLevelPlayBannerSize.resolve(smart, containerWidth: 390),
@@ -58,15 +60,19 @@ final class BannerSizeResolutionTests: XCTestCase {
         )
     }
 
-    func test_adaptive_usesRequestedOrContainerWidth() {
-        let explicit = ISBannerSize(description: "CUSTOM", width: 400, height: 0)
+    func test_adaptive_usesRequestedOrContainerWidth() throws {
+        let explicit = try XCTUnwrap(
+            ISBannerSize(description: "CUSTOM", width: 400, height: 0)
+        )
         explicit.isAdaptive = true
         XCTAssertEqual(
             VelocityAdsLevelPlayBannerSize.resolve(explicit, containerWidth: 390),
             .adaptiveBanner(width: 400)
         )
 
-        let fallback = ISBannerSize(description: "SMART", width: 0, height: 0)
+        let fallback = try XCTUnwrap(
+            ISBannerSize(description: "SMART", width: 0, height: 0)
+        )
         fallback.isAdaptive = true
         XCTAssertEqual(
             VelocityAdsLevelPlayBannerSize.resolve(fallback, containerWidth: 390),

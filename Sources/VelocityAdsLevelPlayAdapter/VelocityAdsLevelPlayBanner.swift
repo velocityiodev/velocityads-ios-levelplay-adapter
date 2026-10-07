@@ -10,6 +10,7 @@ public final class VelocityAdsLevelPlayBanner: ISBaseBanner {
     private var ad: VelocityBannerAd?
     private var adView: VelocityBannerAdView?
     private var velocityDelegate: VelocityBannerAdapterDelegate?
+    private var loadGeneration = 0
 
     public override func loadAd(
         with adData: ISAdData,
@@ -29,6 +30,7 @@ public final class VelocityAdsLevelPlayBanner: ISBaseBanner {
 
     public override func destroyAd(with adData: ISAdData) {
         runOnMain { [weak self] in
+            self?.loadGeneration += 1
             self?.ad?.destroy()
             self?.ad = nil
             self?.adView = nil
@@ -47,6 +49,8 @@ public final class VelocityAdsLevelPlayBanner: ISBaseBanner {
         size: ISBannerSize,
         delegate: ISBannerAdDelegate
     ) {
+        loadGeneration += 1
+        let requestGeneration = loadGeneration
         let parameters = VelocityAdsServerParameters(adData: adData)
         guard let appKey = parameters.appKey else {
             failLoad(
@@ -74,6 +78,7 @@ public final class VelocityAdsLevelPlayBanner: ISBaseBanner {
         adapter.forwardMediationInfo()
         adapter.ensureInitialized(appKey: appKey) { [weak self] outcome in
             guard let self else { return }
+            guard requestGeneration == self.loadGeneration else { return }
             switch outcome {
             case .success:
                 self.startLoad(

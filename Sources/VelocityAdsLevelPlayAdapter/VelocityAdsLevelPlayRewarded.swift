@@ -9,6 +9,7 @@ import VelocityAdsSDK
 public final class VelocityAdsLevelPlayRewarded: ISBaseRewardedVideo {
     private var ad: VelocityRewardedAd?
     private var velocityDelegate: VelocityRewardedAdapterDelegate?
+    private var loadGeneration = 0
 
     public override func loadAd(
         with adData: ISAdData,
@@ -44,6 +45,7 @@ public final class VelocityAdsLevelPlayRewarded: ISBaseRewardedVideo {
 
     public override func destroyAd(with adData: ISAdData) {
         runOnMain { [weak self] in
+            self?.loadGeneration += 1
             self?.ad?.destroy()
             self?.ad = nil
             self?.velocityDelegate = nil
@@ -55,6 +57,8 @@ public final class VelocityAdsLevelPlayRewarded: ISBaseRewardedVideo {
         adData: ISAdData,
         delegate: ISRewardedVideoAdDelegate
     ) {
+        loadGeneration += 1
+        let requestGeneration = loadGeneration
         let parameters = VelocityAdsServerParameters(adData: adData)
         guard let appKey = parameters.appKey else {
             failLoad(
@@ -82,6 +86,7 @@ public final class VelocityAdsLevelPlayRewarded: ISBaseRewardedVideo {
         adapter.forwardMediationInfo()
         adapter.ensureInitialized(appKey: appKey) { [weak self] outcome in
             guard let self else { return }
+            guard requestGeneration == self.loadGeneration else { return }
             switch outcome {
             case .success:
                 self.startLoad(adUnitId: adUnitId, delegate: delegate)

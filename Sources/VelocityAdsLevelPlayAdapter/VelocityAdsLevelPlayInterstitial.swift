@@ -9,6 +9,7 @@ import VelocityAdsSDK
 public final class VelocityAdsLevelPlayInterstitial: ISBaseInterstitial {
     private var ad: VelocityInterstitialAd?
     private var velocityDelegate: VelocityInterstitialAdapterDelegate?
+    private var loadGeneration = 0
 
     public override func loadAd(
         with adData: ISAdData,
@@ -44,6 +45,7 @@ public final class VelocityAdsLevelPlayInterstitial: ISBaseInterstitial {
 
     public override func destroyAd(with adData: ISAdData) {
         runOnMain { [weak self] in
+            self?.loadGeneration += 1
             self?.ad?.destroy()
             self?.ad = nil
             self?.velocityDelegate = nil
@@ -55,6 +57,8 @@ public final class VelocityAdsLevelPlayInterstitial: ISBaseInterstitial {
         adData: ISAdData,
         delegate: ISInterstitialAdDelegate
     ) {
+        loadGeneration += 1
+        let requestGeneration = loadGeneration
         let parameters = VelocityAdsServerParameters(adData: adData)
         guard let appKey = parameters.appKey else {
             failLoad(
@@ -82,6 +86,7 @@ public final class VelocityAdsLevelPlayInterstitial: ISBaseInterstitial {
         adapter.forwardMediationInfo()
         adapter.ensureInitialized(appKey: appKey) { [weak self] outcome in
             guard let self else { return }
+            guard requestGeneration == self.loadGeneration else { return }
             switch outcome {
             case .success:
                 self.startLoad(adUnitId: adUnitId, delegate: delegate)

@@ -106,8 +106,8 @@ public final class VelocityAdsLevelPlayAdapter: ISBaseNetworkAdapter, ISAdapterM
         }
     }
 
-    public func setMetaData(
-        withKey key: String!,
+    public func setMetaDataWithKey(
+        _ key: String!,
         andValues values: NSMutableArray!
     ) {
         guard let key,

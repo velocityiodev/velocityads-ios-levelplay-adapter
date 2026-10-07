@@ -23,8 +23,8 @@ final class PrivacyForwardingTests: XCTestCase {
         }
 
         adapter.setConsent(true)
-        adapter.setMetaData(
-            withKey: "do_not_sell",
+        adapter.setMetaDataWithKey(
+            "do_not_sell",
             andValues: NSMutableArray(object: "yes")
         )
         adapter.forwardPrivacySettings()
@@ -40,8 +40,8 @@ final class PrivacyForwardingTests: XCTestCase {
             doNotSell = $1
         }
 
-        adapter.setMetaData(
-            withKey: "do_not_sell",
+        adapter.setMetaDataWithKey(
+            "do_not_sell",
             andValues: NSMutableArray(object: NSNumber(value: false))
         )
         adapter.forwardPrivacySettings()
@@ -56,8 +56,8 @@ final class PrivacyForwardingTests: XCTestCase {
             doNotSell = $1
         }
 
-        adapter.setMetaData(
-            withKey: "unrelated",
+        adapter.setMetaDataWithKey(
+            "unrelated",
             andValues: NSMutableArray(object: "true")
         )
         adapter.forwardPrivacySettings()

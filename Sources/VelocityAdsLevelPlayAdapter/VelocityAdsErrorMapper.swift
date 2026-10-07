@@ -47,4 +47,12 @@ enum VelocityAdsErrorMapper {
             message: "Velocity Ads: ad is not ready to show"
         )
     }
+
+    static func adapterUnavailable() -> VelocityAdsLevelPlayError {
+        VelocityAdsLevelPlayError(
+            type: .internal,
+            code: ISAdapterErrors.internal.rawValue,
+            message: "Velocity Ads: LevelPlay network adapter is unavailable"
+        )
+    }
 }

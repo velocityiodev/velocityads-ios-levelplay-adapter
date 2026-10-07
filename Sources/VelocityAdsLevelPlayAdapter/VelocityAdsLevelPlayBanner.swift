@@ -18,66 +18,12 @@ public final class VelocityAdsLevelPlayBanner: ISBaseBanner {
         delegate: ISBannerAdDelegate
     ) {
         runOnMain { [weak self] in
-            guard let self else { return }
-            let parameters = VelocityAdsServerParameters(adData: adData)
-            guard let appKey = parameters.appKey else {
-                self.failLoad(
-                    delegate,
-                    VelocityAdsErrorMapper.missingParameter(
-                        VelocityAdsLevelPlayRegistration.appKey
-                    )
-                )
-                return
-            }
-            guard let adUnitId = parameters.adUnitId else {
-                self.failLoad(
-                    delegate,
-                    VelocityAdsErrorMapper.missingParameter(
-                        VelocityAdsLevelPlayRegistration.adUnitId
-                    )
-                )
-                return
-            }
-            guard let adapter = self.getNetworkAdapter() as? VelocityAdsLevelPlayAdapter else {
-                self.failLoad(
-                    delegate,
-                    VelocityAdsLevelPlayError(
-                        type: .internal,
-                        code: ISAdapterErrors.internal.rawValue,
-                        message: "Velocity Ads: LevelPlay network adapter is unavailable"
-                    )
-                )
-                return
-            }
-
-            adapter.forwardMediationInfo()
-            adapter.ensureInitialized(appKey: appKey) { [weak self] outcome in
-                guard let self else { return }
-                switch outcome {
-                case .success:
-                    self.ad?.destroy()
-                    let resolvedSize = VelocityAdsLevelPlayBannerSize.resolve(
-                        size,
-                        containerWidth: viewController.view.bounds.width
-                    )
-                    let adView = VelocityBannerAdView()
-                    let velocityDelegate = VelocityBannerAdapterDelegate(
-                        delegate: delegate,
-                        adView: adView
-                    )
-                    let request = VelocityBannerAdRequest.Builder(
-                        adUnitId: adUnitId,
-                        adSize: resolvedSize
-                    ).build()
-                    let ad = VelocityBannerAd(request)
-                    self.ad = ad
-                    self.adView = adView
-                    self.velocityDelegate = velocityDelegate
-                    ad.load(bannerView: adView, delegate: velocityDelegate)
-                case let .failure(error):
-                    self.failLoad(delegate, error)
-                }
-            }
+            self?.loadOnMain(
+                adData: adData,
+                viewController: viewController,
+                size: size,
+                delegate: delegate
+            )
         }
     }
 
@@ -92,6 +38,82 @@ public final class VelocityAdsLevelPlayBanner: ISBaseBanner {
 
     public override func isSupportAdaptiveBanner() -> Bool {
         true
+    }
+
+    @MainActor
+    private func loadOnMain(
+        adData: ISAdData,
+        viewController: UIViewController,
+        size: ISBannerSize,
+        delegate: ISBannerAdDelegate
+    ) {
+        let parameters = VelocityAdsServerParameters(adData: adData)
+        guard let appKey = parameters.appKey else {
+            failLoad(
+                delegate,
+                VelocityAdsErrorMapper.missingParameter(
+                    VelocityAdsLevelPlayRegistration.appKey
+                )
+            )
+            return
+        }
+        guard let adUnitId = parameters.adUnitId else {
+            failLoad(
+                delegate,
+                VelocityAdsErrorMapper.missingParameter(
+                    VelocityAdsLevelPlayRegistration.adUnitId
+                )
+            )
+            return
+        }
+        guard let adapter = getNetworkAdapter() as? VelocityAdsLevelPlayAdapter else {
+            failLoad(delegate, VelocityAdsErrorMapper.adapterUnavailable())
+            return
+        }
+
+        adapter.forwardMediationInfo()
+        adapter.ensureInitialized(appKey: appKey) { [weak self] outcome in
+            guard let self else { return }
+            switch outcome {
+            case .success:
+                self.startLoad(
+                    adUnitId: adUnitId,
+                    size: size,
+                    containerWidth: viewController.view.bounds.width,
+                    delegate: delegate
+                )
+            case let .failure(error):
+                self.failLoad(delegate, error)
+            }
+        }
+    }
+
+    @MainActor
+    private func startLoad(
+        adUnitId: String,
+        size: ISBannerSize,
+        containerWidth: CGFloat,
+        delegate: ISBannerAdDelegate
+    ) {
+        ad?.destroy()
+        let resolvedSize = VelocityAdsLevelPlayBannerSize.resolve(
+            size,
+            containerWidth: containerWidth
+        )
+        let adView = VelocityBannerAdView()
+        let velocityDelegate = VelocityBannerAdapterDelegate(
+            delegate: delegate,
+            adView: adView
+        )
+        let request = VelocityBannerAdRequest.Builder(
+            adUnitId: adUnitId,
+            adSize: resolvedSize
+        ).build()
+        let ad = VelocityBannerAd(request)
+        self.ad = ad
+        self.adView = adView
+        self.velocityDelegate = velocityDelegate
+        ad.load(bannerView: adView, delegate: velocityDelegate)
     }
 
     private func failLoad(

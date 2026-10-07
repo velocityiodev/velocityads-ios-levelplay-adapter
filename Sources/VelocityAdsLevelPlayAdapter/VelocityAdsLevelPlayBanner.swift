@@ -120,7 +120,7 @@ public final class VelocityAdsLevelPlayBanner: ISBaseBanner {
         _ delegate: ISBannerAdDelegate,
         _ error: VelocityAdsLevelPlayError
     ) {
-        delegate.adDidFailToLoadWithErrorType(
+        delegate.adDidFailToLoadWith(
             error.type,
             errorCode: error.code,
             errorMessage: error.message

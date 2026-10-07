@@ -42,7 +42,7 @@ final class VelocityBannerAdapterDelegate: NSObject, VelocityBannerAdDelegate {
             callbacks.failedToLoad(mapped)
             return
         }
-        levelPlayDelegate?.adDidFailToLoadWithErrorType(
+        levelPlayDelegate?.adDidFailToLoadWith(
             mapped.type,
             errorCode: mapped.code,
             errorMessage: mapped.message

@@ -114,7 +114,7 @@ public final class VelocityAdsLevelPlayInterstitial: ISBaseInterstitial {
         _ delegate: ISInterstitialAdDelegate,
         _ error: VelocityAdsLevelPlayError
     ) {
-        delegate.adDidFailToLoadWithErrorType(
+        delegate.adDidFailToLoadWith(
             error.type,
             errorCode: error.code,
             errorMessage: error.message

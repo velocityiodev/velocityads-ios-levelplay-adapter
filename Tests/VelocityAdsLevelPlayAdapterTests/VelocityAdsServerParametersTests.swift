@@ -7,8 +7,11 @@ final class VelocityAdsServerParametersTests: XCTestCase {
     func test_readsRegisteredKeysFromLevelPlayAdData() {
         let adData = ISAdData(
             serverData: nil,
-            configuration: ["appKey": " app-key "],
-            adUnitData: ["adUnitId": " ad-unit "]
+            configuration: [
+                "appKey": " app-key ",
+                "adUnitId": " ad-unit ",
+            ],
+            adUnitData: nil
         )
 
         let parameters = VelocityAdsServerParameters(adData: adData)

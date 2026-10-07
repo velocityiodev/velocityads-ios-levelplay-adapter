@@ -9,7 +9,7 @@ final class VelocityAdsServerParametersTests: XCTestCase {
             serverData: nil,
             configuration: [
                 "appKey": " app-key ",
-                "adUnitId": " ad-unit ",
+                "adUnitId": " ad-unit "
             ],
             adUnitData: nil
         )

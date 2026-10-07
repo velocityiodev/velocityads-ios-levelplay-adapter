@@ -40,8 +40,8 @@ final class VelocityRewardedAdapterDelegate: NSObject, VelocityRewardedAdDelegat
             callbacks.failedToLoad(mapped)
             return
         }
-        levelPlayDelegate?.adDidFailToLoad(
-            with: mapped.type,
+        levelPlayDelegate?.adDidFailToLoadWithErrorType(
+            mapped.type,
             errorCode: mapped.code,
             errorMessage: mapped.message
         )

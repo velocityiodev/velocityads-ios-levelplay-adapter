@@ -114,8 +114,8 @@ public final class VelocityAdsLevelPlayRewarded: ISBaseRewardedVideo {
         _ delegate: ISRewardedVideoAdDelegate,
         _ error: VelocityAdsLevelPlayError
     ) {
-        delegate.adDidFailToLoad(
-            with: error.type,
+        delegate.adDidFailToLoadWithErrorType(
+            error.type,
             errorCode: error.code,
             errorMessage: error.message
         )

@@ -22,4 +22,7 @@ Pod::Spec.new do |s|
 
   s.dependency 'IronSourceSDK', '>= 9.6.1.0', '< 10.0.0'
   s.dependency 'VelocityAdsSDK', '~> 0.11.0'
+
+  # LevelPlay and Velocity distribute static XCFrameworks.
+  s.static_framework = true
 end
